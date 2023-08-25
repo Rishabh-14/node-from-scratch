@@ -1,25 +1,23 @@
-class ClientManager {
-  constructor(bufferedHandler, logger) {
-    this.bufferedHandler = bufferedHandler;
-    this.logger = logger;
-  }
+let clients = [];
 
-  handle(client) {
-    client.on("data", (data) => {
-      const message = this.bufferedHandler.handleData(data);
-      if (message) {
-        this.logger.log(`Message received: ${message}`);
-      }
-    });
+function registerClient(client) {
+  const clientInfo = {
+    id: Date.now(), // unique identifier
+    address: client.remoteAddress,
+    port: client.remotePort,
+  };
+  clients.push(clientInfo);
 
-    client.on("end", () => {
-      this.logger.log(`Client disconnected.`);
-    });
-
-    client.on("error", (err) => {
-      this.logger.error(`Client error: ${err.message}`);
-    });
-  }
+  client.on("close", () => {
+    clients = clients.filter((c) => c.id !== clientInfo.id);
+  });
 }
 
-module.exports = ClientManager;
+function getActiveClients() {
+  return clients;
+}
+
+module.exports = {
+  registerClient,
+  getActiveClients,
+};
