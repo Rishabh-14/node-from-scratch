@@ -24,3 +24,6 @@ incrementClientCount();
 // If you want to print the number of clients connected, anywhere in your code, you can use:
 console.log(getClientCount());
 client.write(JSON.stringify(generateMetrics()));
+
+const commandResponse = processCommand(data.toString());
+client.write(commandResponse);
